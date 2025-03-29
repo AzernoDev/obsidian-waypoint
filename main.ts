@@ -276,6 +276,7 @@ export default class Waypoint extends Plugin {
 		if (!(node instanceof TFile) && !(node instanceof TFolder)) {
 			return null;
 		}
+
 		this.log(node.path);
 		if (this.ignorePath(node.path)) {
 			return null;
@@ -285,12 +286,12 @@ export default class Waypoint extends Plugin {
 				console.log(node);
 			}
 			// If non-null get the file's title property
-			let title : string | null;
+			let title: string | null;
 			if (this.settings.useFrontMatterTitle) {
 				const fm = this.app.metadataCache?.getFileCache(node)?.frontmatter;
 				// check if the file has a "title" property and if so return it
-				if (fm && fm.hasOwnProperty("title")){
-					title =  fm.title;
+				if (fm && fm.hasOwnProperty("title")) {
+					title = fm.title;
 				}
 			} else {
 				title = null;
@@ -301,7 +302,7 @@ export default class Waypoint extends Plugin {
 					if (title) {
 						return `${bullet} [[${node.basename}|${title}]]`;
 					} else {
-					return `${bullet} [[${node.basename}]]`;
+						return `${bullet} [[${node.basename}]]`;
 					}
 				}
 				if (title) {
@@ -324,13 +325,13 @@ export default class Waypoint extends Plugin {
 			text = `${bullet} **${node.name}**`;
 			let folderNote;
 			if (this.settings.folderNoteType === FolderNoteType.InsideFolder) {
-				folderNote = this.app.vault.getAbstractFileByPath(node.path + "/" + node.name + ".md");
+				folderNote = this.app.vault.getAbstractFileByPath(node.path + "/" + node.name);
 			} else if (node.parent) {
-				folderNote = this.app.vault.getAbstractFileByPath(node.parent.path + "/" + node.name + ".md");
+				folderNote = this.app.vault.getAbstractFileByPath(node.parent.path + "/" + node.name);
 			}
 			if (folderNote instanceof TFile) {
 				if (this.settings.useWikiLinks) {
-					text = `${bullet} **[[${folderNote.basename}]]**`;
+					text = `${bullet} **[[${folderNote.basename + (folderNote.extension == ".md" ? folderNote.extension : "")}]]**`;
 				} else {
 					text = `${bullet} **[${folderNote.basename}](${this.getEncodedUri(rootNode, folderNote)})**`;
 				}
@@ -515,6 +516,8 @@ class WaypointSettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 		containerEl.createEl("h2", { text: "Waypoint Settings" });
+		containerEl.createEl("span", { text: `Version: ${this.plugin.manifest.version}` });
+
 		new Setting(this.containerEl)
 			.setName("Folder Note Style")
 			.setDesc("Select the style of folder note used.")

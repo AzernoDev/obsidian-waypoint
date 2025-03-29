@@ -5,7 +5,9 @@
 *.iml
 .idea
 
-# npm
+# npm and pnpm
+.pnpm-store
+pnpm-lock.yaml
 node_modules
 
 # Don't include the compiled main.js file in the repo.
